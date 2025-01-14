@@ -3,33 +3,6 @@ import { knex } from '../database'
 import { z } from 'zod'
 
 export async function usersRoutes(app: FastifyInstance): Promise<void> {
-
-  app.addSchema({
-    $id: 'user',
-    type: 'object',
-    properties: {
-      id: { type: 'string' },
-      username: { type: 'string' },
-      createdAt: { type: 'string' },
-      session_id: { type: 'string' },
-    },
-  })
-
-
-  app.get(
-    '/',
-    {
-      schema: {
-        tags: ['users'],
-      },
-    },
-    async () => {
-      const users = await knex('users').select('*')
-
-      return users
-    },
-  )
-
   app.post(
     '/',
     {
