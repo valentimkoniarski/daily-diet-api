@@ -19,11 +19,11 @@ beforeEach(() => {
 describe('Testes das rotas de users', () => {
   it('O usuário deve conseguir se cadastrar', async () => {
     const response = await request(app.server)
-    .post('/users')
-    .send({
-      username: 'Valentim Koniarski Junior',
-    })
-    expect(201)
+      .post('/users')
+      .send({
+        username: 'Valentim Koniarski Junior',
+      })
+      .expect(201)
 
     const cookies = response.get('Set-Cookie')
 

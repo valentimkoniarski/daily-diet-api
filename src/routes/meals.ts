@@ -22,7 +22,13 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
   app.get('/', async (request) => {
     return await knex('meals')
       .where({ user_id: request.user?.id })
-      .select('id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at as createdAt')
+      .select(
+        'id',
+        'name',
+        'description',
+        'is_on_diet as isOnDiet',
+        'created_at as createdAt',
+      )
   })
 
   app.post('/', async (request, reply) => {
@@ -35,12 +41,18 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
 
     const [createdMeal] = await knex('meals')
       .insert({
-      user_id: request.user?.id,
-      name: meal.name,
-      description: meal.description,
-      is_on_diet: meal.isOnDiet,
+        user_id: request.user?.id,
+        name: meal.name,
+        description: meal.description,
+        is_on_diet: meal.isOnDiet,
       })
-      .returning(['id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at'])
+      .returning([
+        'id',
+        'name',
+        'description',
+        'is_on_diet as isOnDiet',
+        'created_at',
+      ])
 
     reply.status(201).send(createdMeal)
   })
@@ -87,7 +99,13 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
 
     const [meal] = await knex('meals')
       .where({ id, user_id: request.user?.id })
-      .select('id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at as createdAt')
+      .select(
+        'id',
+        'name',
+        'description',
+        'is_on_diet as isOnDiet',
+        'created_at as createdAt',
+      )
 
     if (!meal) {
       reply.status(404).send({ message: 'Meal not found' })

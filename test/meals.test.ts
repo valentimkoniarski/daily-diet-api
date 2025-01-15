@@ -93,8 +93,6 @@ describe('Testes das rotas de meals', () => {
       })
       .expect(201)
 
-    console.log(mealResponse.body.id)
-
     await request(app.server)
       .put(`/meals/${mealResponse.body.id}`)
       .set('Cookie', cookie)

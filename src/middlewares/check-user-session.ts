@@ -25,5 +25,4 @@ export async function checkSessionIdExists(
   }
 
   request.user = user
-
 }
