@@ -20,7 +20,9 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
   })
 
   app.get('/', async (request) => {
-    return await knex('meals').where({ user_id: request.user?.id }).select('*')
+    return await knex('meals')
+      .where({ user_id: request.user?.id })
+      .select('id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at as createdAt')
   })
 
   app.post('/', async (request, reply) => {
@@ -31,13 +33,16 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
     })
     const meal = createMealSchema.parse(request.body)
 
-    await knex('meals').insert({
+    const [createdMeal] = await knex('meals')
+      .insert({
       user_id: request.user?.id,
       name: meal.name,
       description: meal.description,
       is_on_diet: meal.isOnDiet,
-    })
-    reply.status(201)
+      })
+      .returning(['id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at'])
+
+    reply.status(201).send(createdMeal)
   })
 
   app.put('/:id', async (request, reply) => {
@@ -59,7 +64,7 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
       description: meal.description,
       is_on_diet: meal.isOnDiet,
     })
-    reply.status(200)
+    reply.status(204)
   })
 
   app.delete('/:id', async (request, reply) => {
@@ -70,7 +75,25 @@ export async function mealsRoutes(app: FastifyInstance): Promise<void> {
     const { id } = getParamsSchema.parse(request.params)
 
     await knex('meals').where({ id, user_id: request.user?.id }).delete()
-    reply.status(200)
+    reply.status(204)
+  })
+
+  app.get('/:id', async (request, reply) => {
+    const getParamsSchema = z.object({
+      id: z.string(),
+    })
+
+    const { id } = getParamsSchema.parse(request.params)
+
+    const [meal] = await knex('meals')
+      .where({ id, user_id: request.user?.id })
+      .select('id', 'name', 'description', 'is_on_diet as isOnDiet', 'created_at as createdAt')
+
+    if (!meal) {
+      reply.status(404).send({ message: 'Meal not found' })
+    }
+
+    return meal
   })
 
   app.get('/metrics', async (request, reply) => {
